@@ -1,10 +1,19 @@
 import { CardInt } from '@/lib/interfaces';
-
-export default function CardComponent({ value, suit }: CardInt) {
+type Props = {
+    card: CardInt;
+    isCovered?: boolean;
+};
+export default function CardComponent({ card, isCovered = false }: Props) {
     return (
         <div className="flex gap-2">
-            <span>{value}</span>
-            <span>{suit}</span>
+            {isCovered ? (
+                <span>covered cart</span>
+            ) : (
+                <>
+                    <span>{card.value}</span>
+                    <span>{card.suit}</span>
+                </>
+            )}
         </div>
     );
 }

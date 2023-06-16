@@ -16,6 +16,7 @@ export default function Game() {
     const [isFirstTurn, setIsFirstTurn] = useState(false);
     const [isLastTurn, setIsLastTurn] = useState(false);
     const [isDouble, setIsDouble] = useState(false);
+    const [coverCard, setCoverCard] = useState(true);
     const [gameMessage, setGameMessage] = useState('');
 
     const playerPoints = playerHand.sumPoints();
@@ -41,6 +42,7 @@ export default function Game() {
             setGameMessage(message);
             setIsLastTurn(false);
             setIsDouble(false);
+            setCoverCard(false);
             await resetHands();
             setIsGameOver(true);
         };
@@ -71,6 +73,7 @@ export default function Game() {
             // Finish the player's game
             setIsDealing(true);
             setIsFirstTurn(false);
+            setCoverCard(false);
             await dealHouseCards();
             setIsLastTurn(true);
         };
@@ -201,6 +204,7 @@ export default function Game() {
 
     const handleStart = async () => {
         setIsGameOver(false);
+        setCoverCard(true);
         setGameMessage('');
         await dealInitialCards();
         setIsFirstTurn(true);
@@ -224,6 +228,7 @@ export default function Game() {
         // Finish the player's game
         setIsDealing(true);
         setIsFirstTurn(false);
+        setCoverCard(false);
         await dealHouseCards();
         setIsLastTurn(true);
     };
@@ -282,7 +287,7 @@ export default function Game() {
             <span className="mb-2">{gameMessage}</span>
             <span>Shoe: {shoe.decks.length}</span>
             <span>House hand: {housePoints}</span>
-            <HandComponent hand={houseHand} />
+            <HandComponent hand={houseHand} coverCard={coverCard} />
             <span>Player hand: {playerPoints}</span>
             <HandComponent hand={playerHand} />
             <div className="flex gap-2 mt-2">
