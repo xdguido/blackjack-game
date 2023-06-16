@@ -1,30 +1,8 @@
 import { useState, useEffect } from 'react';
 import HandComponent from '@/components/Hand';
-import { CardInt } from '@/lib/interfaces';
+import { CardInt, HandInt } from '@/lib/interfaces';
 import { Hand, Shoe } from '@/lib/models';
-
-function sumPoints(points: number, card: CardInt) {
-    let sum = points;
-    let hasAce = false;
-    switch (card.value) {
-        case 'A':
-            sum += 1;
-            hasAce = true;
-            break;
-        case 'J':
-        case 'Q':
-        case 'K':
-            sum += 10;
-            break;
-        default:
-            sum += card.value as number;
-            break;
-    }
-    if (hasAce && sum + 10 <= 21) {
-        sum += 10;
-    }
-    return sum;
-}
+import { sumPoints } from '@/lib/utils';
 
 export default function Game() {
     // cards flow state
@@ -170,7 +148,7 @@ export default function Game() {
         setSplitHand(new Hand());
     };
 
-    const dealCards = async (hand: Hand, amount: number) => {
+    const dealCards = async (hand: HandInt, amount: number) => {
         let cardIndex: number = 0;
 
         const dealCard = () => {
