@@ -1,118 +1,385 @@
-import Image from 'next/image'
-import { Inter } from 'next/font/google'
+import { useState, useEffect } from 'react';
+import HandComponent from '@/components/Hand';
+// Define Card type
+export type Card = {
+    value: number | string;
+    suit: string;
+};
 
-const inter = Inter({ subsets: ['latin'] })
+// Define Hand class
+export class Hand {
+    cards: Card[];
+    constructor() {
+        this.cards = [];
+    }
+    sumPoints() {
+        let sum = 0;
+        let hasAce = false;
+        for (const card of this.cards) {
+            switch (card.value) {
+                case 'A':
+                    sum += 1;
+                    hasAce = true;
+                    break;
+                case 'J':
+                case 'Q':
+                case 'K':
+                    sum += 10;
+                    break;
+                default:
+                    sum += card.value as number;
+                    break;
+            }
+        }
+        if (hasAce && sum + 10 <= 21) {
+            sum += 10;
+        }
+        return sum;
+    }
+}
 
-export default function Home() {
-  return (
-    <main
-      className={`flex min-h-screen flex-col items-center justify-between p-24 ${inter.className}`}
-    >
-      <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">src/pages/index.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:h-auto lg:w-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
+// Define Shoe class
+class Shoe {
+    decks: Card[];
+    constructor(decks?: number) {
+        this.decks = [];
+        if (!decks) {
+            return;
+        }
+        for (let i = 0; i < decks; i++) {
+            const deck = this.createDeck();
+            this.decks.push(...deck);
+        }
+        this.shuffle();
+    }
 
-      <div className="relative flex place-items-center before:absolute before:h-[300px] before:w-[480px] before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-[240px] after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700/10 after:dark:from-sky-900 after:dark:via-[#0141ff]/40 before:lg:h-[360px]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
+    private createDeck(): Card[] {
+        const suits = ['Spades', 'Hearts', 'Diamonds', 'Clubs'];
+        const values = ['A', 2, 3, 4, 5, 6, 7, 8, 9, 10, 'J', 'Q', 'K'];
+        const deck: Card[] = [];
+        for (const suit of suits) {
+            for (const value of values) {
+                const card: Card = {
+                    value: value,
+                    suit: suit
+                };
+                deck.push(card);
+            }
+        }
+        return deck;
+    }
 
-      <div className="mb-32 grid text-center lg:mb-0 lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Docs{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
+    private shuffle() {
+        const { decks } = this;
+        // Fisher-Yates shuffle algorithm
+        for (let i = decks.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [decks[i], decks[j]] = [decks[j], decks[i]];
+        }
+    }
 
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Learn{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
+    // copy state and return updated objects for later save.
+    popCardFromShoe() {
+        const shoeCopy = new Shoe();
+        shoeCopy.decks = this.decks;
+        const card = shoeCopy.decks.pop();
+        return { card, newShoe: shoeCopy };
+    }
+}
 
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Templates{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Discover and deploy boilerplate example Next.js&nbsp;projects.
-          </p>
-        </a>
+function sumPoints(points: number, card: Card) {
+    let sum = points;
+    let hasAce = false;
+    switch (card.value) {
+        case 'A':
+            sum += 1;
+            hasAce = true;
+            break;
+        case 'J':
+        case 'Q':
+        case 'K':
+            sum += 10;
+            break;
+        default:
+            sum += card.value as number;
+            break;
+    }
+    if (hasAce && sum + 10 <= 21) {
+        sum += 10;
+    }
+    return sum;
+}
 
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Deploy{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
-  )
+export default function Game() {
+    // cards flow state
+    const [playerHand, setPlayerHand] = useState<Hand>(() => new Hand());
+    const [splitHand, setSplitHand] = useState<Hand>(() => new Hand());
+    const [houseHand, setHouseHand] = useState<Hand>(() => new Hand());
+    const [shoe, setShoe] = useState<Shoe>(() => new Shoe(2));
+    // game flow state
+    const [isDealing, setIsDealing] = useState(false);
+    const [isGameOver, setIsGameOver] = useState(true);
+    const [isFirstTurn, setIsFirstTurn] = useState(false);
+    const [isLastTurn, setIsLastTurn] = useState(false);
+    const [gameMessage, setGameMessage] = useState('');
+
+    const playerPoints = playerHand.sumPoints();
+    const splitPoints = splitHand.sumPoints();
+    const housePoints = houseHand.sumPoints();
+
+    const delay: number = 500;
+
+    useEffect(() => {
+        const evalBj = async () => {
+            if (isFirstTurn) {
+                const evaluateBlackjack = (points: number) => {
+                    if (points === 21) {
+                        return true;
+                    }
+                    return false;
+                };
+                const houseBj = evaluateBlackjack(housePoints);
+                const playerBj = evaluateBlackjack(playerPoints);
+                if (playerBj && !houseBj) {
+                    setGameMessage('You won! Blackjack');
+                    setIsLastTurn(false);
+                    await resetHands();
+                    setIsGameOver(true);
+                }
+                if (!playerBj && houseBj) {
+                    setGameMessage('You lose to Blackjack');
+                    setIsLastTurn(false);
+                    await resetHands();
+                    setIsGameOver(true);
+                }
+                if (playerBj && houseBj) {
+                    setGameMessage('Push');
+                    setIsLastTurn(false);
+                    await resetHands();
+                    setIsGameOver(true);
+                }
+            }
+        };
+        const evalBust = async () => {
+            if (!isFirstTurn) {
+                const evaluateBust = (points: number) => {
+                    if (points > 21) {
+                        return true;
+                    }
+                    return false;
+                };
+                const playerBust = evaluateBust(playerPoints);
+                const houseBust = evaluateBust(housePoints);
+                if (playerBust) {
+                    setGameMessage('Bust');
+                    setIsLastTurn(false);
+                    await resetHands();
+                    setIsGameOver(true);
+                }
+                if (houseBust) {
+                    setGameMessage('You win. House bust');
+                    setIsLastTurn(false);
+                    await resetHands();
+                    setIsGameOver(true);
+                }
+            }
+        };
+        const evalGame = async () => {
+            const evaluateBust = (points: number) => {
+                if (points > 21) {
+                    return true;
+                }
+                return false;
+            };
+            const houseBust = evaluateBust(housePoints);
+            if (isLastTurn && !houseBust) {
+                if (playerPoints > housePoints) {
+                    setGameMessage('You win');
+                    setIsLastTurn(false);
+                    await resetHands();
+                    setIsGameOver(true);
+                }
+                if (playerPoints < housePoints) {
+                    setGameMessage('You lose');
+                    setIsLastTurn(false);
+                    await resetHands();
+                    setIsGameOver(true);
+                }
+                if (playerPoints === housePoints) {
+                    setGameMessage('Push');
+                    setIsLastTurn(false);
+                    await resetHands();
+                    setIsGameOver(true);
+                }
+            }
+        };
+        evalBj();
+        evalBust();
+        evalGame();
+    }, [playerHand, playerPoints, housePoints, isGameOver, isFirstTurn, isLastTurn]);
+
+    const resetHands = async () => {
+        setIsDealing(true);
+        await new Promise((resolve) => {
+            setTimeout(resolve, 2000);
+        });
+        setIsDealing(false);
+        setPlayerHand(new Hand());
+        setHouseHand(new Hand());
+        setSplitHand(new Hand());
+    };
+
+    const dealCards = async (hand: Hand, amount: number) => {
+        let cardIndex: number = 0;
+
+        const dealCard = () => {
+            const { card, newShoe } = shoe.popCardFromShoe();
+
+            switch (hand) {
+                case playerHand:
+                    setPlayerHand((prevState) => {
+                        const updatedHand = new Hand();
+                        updatedHand.cards = [...prevState.cards];
+                        if (card) {
+                            updatedHand.cards.push(card);
+                        }
+                        return updatedHand;
+                    });
+                    break;
+                case houseHand:
+                    setHouseHand((prevState) => {
+                        const updatedHand = new Hand();
+                        updatedHand.cards = [...prevState.cards];
+                        if (card) {
+                            updatedHand.cards.push(card);
+                        }
+                        return updatedHand;
+                    });
+                    break;
+                case splitHand:
+                    setSplitHand((prevState) => {
+                        const updatedHand = new Hand();
+                        updatedHand.cards = [...prevState.cards];
+                        if (card) {
+                            updatedHand.cards.push(card);
+                        }
+                        return updatedHand;
+                    });
+                    break;
+                default:
+                    console.log('Invalid hand');
+            }
+
+            setShoe(newShoe);
+            cardIndex++;
+        };
+
+        while (cardIndex < amount) {
+            await new Promise((resolve) => setTimeout(resolve, delay));
+            dealCard();
+        }
+    };
+
+    const handleStart = async () => {
+        setIsGameOver(false);
+        setGameMessage('');
+        await dealInitialCards();
+        setIsFirstTurn(true);
+    };
+
+    const handleHit = async () => {
+        setIsDealing(true);
+        await dealCards(playerHand, 1);
+        setIsDealing(false);
+        setIsFirstTurn(false);
+    };
+
+    const dealInitialCards = async () => {
+        setIsDealing(true);
+        await dealCards(houseHand, 2);
+        await dealCards(playerHand, 2);
+        setIsDealing(false);
+    };
+
+    const dealHouseCards = async () => {
+        let currentPoints = housePoints;
+        const dealCard = () => {
+            const { card, newShoe } = shoe.popCardFromShoe();
+
+            setHouseHand((prevState) => {
+                const updatedHand = new Hand();
+                updatedHand.cards = [...prevState.cards];
+                if (card) {
+                    updatedHand.cards.push(card);
+                }
+                return updatedHand;
+            });
+
+            setShoe(newShoe);
+            return card as Card;
+        };
+        while (currentPoints < 17) {
+            await new Promise((resolve) => setTimeout(resolve, delay));
+            const card = dealCard();
+            currentPoints = sumPoints(currentPoints, card);
+        }
+    };
+
+    // const hitSplit = () => {
+    //     const { hand: updatedHand, shoe: updatedShoe } = shoe.popCardsFromShoe(splitHand, 1);
+    //     setSplitHand(updatedHand);
+    //     setShoe(updatedShoe);
+    //     evaluatePlayerBust(updatedHand.sumPoints());
+    // };
+
+    // const double = () => {
+    //     // Double the bet
+    //     // Draw one more card
+    //     if (isSplit) {
+    //         hitSplit();
+    //     } else {
+    //         handleHit();
+    //     }
+    //     // Stand automatically
+    //     handleStand();
+    // };
+
+    // const split = () => {
+    //     // Split the player's hand into two new hands
+    //     const hand1 = new Hand();
+    //     hand1.cards.push(playerHand.cards[0]);
+    //     setPlayerHand(hand1);
+    //     const hand2 = new Hand();
+    //     hand2.cards.push(playerHand.cards[1]);
+    //     setSplitHand(hand2);
+    // };
+
+    const handleStand = async () => {
+        // Finish the player's game
+        setIsDealing(true);
+        setIsFirstTurn(false);
+        await dealHouseCards();
+        setIsLastTurn(true);
+    };
+
+    return (
+        <main className="flex flex-col items-center min-h-screen p-24">
+            <h1>Blackjack</h1>
+            <span className="mb-2">{gameMessage}</span>
+            <span>Shoe: {shoe.decks.length}</span>
+            <span>House hand: {housePoints}</span>
+            <HandComponent hand={houseHand} />
+            <span>Player hand: {playerPoints}</span>
+            <HandComponent hand={playerHand} />
+            <div className="flex gap-2 mt-2">
+                {!isDealing && !isGameOver && (
+                    <>
+                        {playerHand.cards.length >= 2 && <button onClick={handleHit}>Hit</button>}
+                        <button onClick={handleStand}>Stand</button>
+                    </>
+                )}
+                {isGameOver && <>{<button onClick={handleStart}>Start</button>}</>}
+            </div>
+        </main>
+    );
 }
