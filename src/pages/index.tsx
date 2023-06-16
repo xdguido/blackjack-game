@@ -130,92 +130,68 @@ export default function Game() {
     const delay: number = 500;
 
     useEffect(() => {
-        const evalBj = async () => {
+        const isBust = (points: number) => {
+            if (points > 21) {
+                return true;
+            }
+            return false;
+        };
+        const isBlackjack = (points: number) => {
+            if (points === 21) {
+                return true;
+            }
+            return false;
+        };
+        const handleGameOver = async (str: string) => {
+            setGameMessage(str);
+            setIsLastTurn(false);
+            await resetHands();
+            setIsGameOver(true);
+        };
+        const handleBj = async () => {
             if (isFirstTurn) {
-                const evaluateBlackjack = (points: number) => {
-                    if (points === 21) {
-                        return true;
-                    }
-                    return false;
-                };
-                const houseBj = evaluateBlackjack(housePoints);
-                const playerBj = evaluateBlackjack(playerPoints);
+                const houseBj = isBlackjack(housePoints);
+                const playerBj = isBlackjack(playerPoints);
                 if (playerBj && !houseBj) {
-                    setGameMessage('You won! Blackjack');
-                    setIsLastTurn(false);
-                    await resetHands();
-                    setIsGameOver(true);
+                    await handleGameOver('You won! Blackjack');
                 }
                 if (!playerBj && houseBj) {
-                    setGameMessage('You lose to Blackjack');
-                    setIsLastTurn(false);
-                    await resetHands();
-                    setIsGameOver(true);
+                    await handleGameOver('You lose');
                 }
                 if (playerBj && houseBj) {
-                    setGameMessage('Push');
-                    setIsLastTurn(false);
-                    await resetHands();
-                    setIsGameOver(true);
+                    await handleGameOver('Push');
                 }
             }
         };
-        const evalBust = async () => {
+        const handleBust = async () => {
             if (!isFirstTurn) {
-                const evaluateBust = (points: number) => {
-                    if (points > 21) {
-                        return true;
-                    }
-                    return false;
-                };
-                const playerBust = evaluateBust(playerPoints);
-                const houseBust = evaluateBust(housePoints);
+                const playerBust = isBust(playerPoints);
+                const houseBust = isBust(housePoints);
                 if (playerBust) {
-                    setGameMessage('Bust');
-                    setIsLastTurn(false);
-                    await resetHands();
-                    setIsGameOver(true);
+                    await handleGameOver('Bust');
                 }
                 if (houseBust) {
-                    setGameMessage('You win. House bust');
-                    setIsLastTurn(false);
-                    await resetHands();
-                    setIsGameOver(true);
+                    await handleGameOver('You win. House bust');
                 }
             }
         };
-        const evalGame = async () => {
-            const evaluateBust = (points: number) => {
-                if (points > 21) {
-                    return true;
-                }
-                return false;
-            };
-            const houseBust = evaluateBust(housePoints);
+        const handleEndGame = async () => {
+            const houseBust = isBust(housePoints);
             if (isLastTurn && !houseBust) {
                 if (playerPoints > housePoints) {
-                    setGameMessage('You win');
-                    setIsLastTurn(false);
-                    await resetHands();
-                    setIsGameOver(true);
+                    await handleGameOver('You win');
                 }
                 if (playerPoints < housePoints) {
-                    setGameMessage('You lose');
-                    setIsLastTurn(false);
-                    await resetHands();
-                    setIsGameOver(true);
+                    await handleGameOver('You lose');
                 }
                 if (playerPoints === housePoints) {
-                    setGameMessage('Push');
-                    setIsLastTurn(false);
-                    await resetHands();
-                    setIsGameOver(true);
+                    await handleGameOver('Push');
                 }
             }
         };
-        evalBj();
-        evalBust();
-        evalGame();
+        handleBj();
+        handleBust();
+        handleEndGame();
     }, [playerHand, playerPoints, housePoints, isGameOver, isFirstTurn, isLastTurn]);
 
     const resetHands = async () => {
