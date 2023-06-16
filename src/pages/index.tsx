@@ -121,13 +121,14 @@ export default function Game() {
     const [isGameOver, setIsGameOver] = useState(true);
     const [isFirstTurn, setIsFirstTurn] = useState(false);
     const [isLastTurn, setIsLastTurn] = useState(false);
+    const [isDouble, setIsDouble] = useState(false);
     const [gameMessage, setGameMessage] = useState('');
 
     const playerPoints = playerHand.sumPoints();
     const splitPoints = splitHand.sumPoints();
     const housePoints = houseHand.sumPoints();
 
-    const delay: number = 500;
+    const delay: number = 300;
 
     useEffect(() => {
         const isBust = (points: number) => {
@@ -145,8 +146,46 @@ export default function Game() {
         const handleGameOver = async (str: string) => {
             setGameMessage(str);
             setIsLastTurn(false);
+            setIsDouble(false);
             await resetHands();
             setIsGameOver(true);
+        };
+        const dealHouseCards = async () => {
+            let currentPoints = housePoints;
+            const dealCard = () => {
+                const { card, newShoe } = shoe.popCardFromShoe();
+
+                setHouseHand((prevState) => {
+                    const updatedHand = new Hand();
+                    updatedHand.cards = [...prevState.cards];
+                    if (card) {
+                        updatedHand.cards.push(card);
+                    }
+                    return updatedHand;
+                });
+
+                setShoe(newShoe);
+                return card as Card;
+            };
+            while (currentPoints < 17) {
+                await new Promise((resolve) => setTimeout(resolve, delay));
+                const card = dealCard();
+                currentPoints = sumPoints(currentPoints, card);
+            }
+        };
+        const handleStand = async () => {
+            // Finish the player's game
+            setIsDealing(true);
+            setIsFirstTurn(false);
+            await dealHouseCards();
+            setIsLastTurn(true);
+        };
+        const handleDouble = async () => {
+            const playerBust = isBust(playerPoints);
+            if (!playerBust && isDouble) {
+                await handleStand();
+                setIsDouble(false);
+            }
         };
         const handleBj = async () => {
             if (isFirstTurn) {
@@ -191,8 +230,18 @@ export default function Game() {
         };
         handleBj();
         handleBust();
+        handleDouble();
         handleEndGame();
-    }, [playerHand, playerPoints, housePoints, isGameOver, isFirstTurn, isLastTurn]);
+    }, [
+        playerHand,
+        playerPoints,
+        housePoints,
+        isGameOver,
+        isFirstTurn,
+        isLastTurn,
+        isDouble,
+        shoe
+    ]);
 
     const resetHands = async () => {
         setIsDealing(true);
@@ -270,6 +319,21 @@ export default function Game() {
         setIsFirstTurn(false);
     };
 
+    const handleDouble = async () => {
+        // Double the bet
+        // Draw one more card
+        await handleHit();
+        setIsDouble(true);
+    };
+
+    const handleStand = async () => {
+        // Finish the player's game
+        setIsDealing(true);
+        setIsFirstTurn(false);
+        await dealHouseCards();
+        setIsLastTurn(true);
+    };
+
     const dealInitialCards = async () => {
         setIsDealing(true);
         await dealCards(houseHand, 2);
@@ -308,18 +372,6 @@ export default function Game() {
     //     evaluatePlayerBust(updatedHand.sumPoints());
     // };
 
-    // const double = () => {
-    //     // Double the bet
-    //     // Draw one more card
-    //     if (isSplit) {
-    //         hitSplit();
-    //     } else {
-    //         handleHit();
-    //     }
-    //     // Stand automatically
-    //     handleStand();
-    // };
-
     // const split = () => {
     //     // Split the player's hand into two new hands
     //     const hand1 = new Hand();
@@ -329,14 +381,6 @@ export default function Game() {
     //     hand2.cards.push(playerHand.cards[1]);
     //     setSplitHand(hand2);
     // };
-
-    const handleStand = async () => {
-        // Finish the player's game
-        setIsDealing(true);
-        setIsFirstTurn(false);
-        await dealHouseCards();
-        setIsLastTurn(true);
-    };
 
     return (
         <main className="flex flex-col items-center min-h-screen p-24">
@@ -350,7 +394,8 @@ export default function Game() {
             <div className="flex gap-2 mt-2">
                 {!isDealing && !isGameOver && (
                     <>
-                        {playerHand.cards.length >= 2 && <button onClick={handleHit}>Hit</button>}
+                        <button onClick={handleHit}>Hit</button>
+                        {isFirstTurn && <button onClick={handleDouble}>Double</button>}
                         <button onClick={handleStand}>Stand</button>
                     </>
                 )}
