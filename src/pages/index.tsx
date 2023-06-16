@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import HandComponent from '@/components/Hand';
-import { CardInt, HandInt, ShoeInt } from '@/lib/interfaces';
+import { CardInt } from '@/lib/interfaces';
 import { Hand, Shoe } from '@/lib/models';
 
 function sumPoints(points: number, card: CardInt) {
@@ -28,10 +28,10 @@ function sumPoints(points: number, card: CardInt) {
 
 export default function Game() {
     // cards flow state
-    const [playerHand, setPlayerHand] = useState<HandInt>(() => new Hand());
-    const [splitHand, setSplitHand] = useState<HandInt>(() => new Hand());
-    const [houseHand, setHouseHand] = useState<HandInt>(() => new Hand());
-    const [shoe, setShoe] = useState<ShoeInt>(() => new Shoe(2));
+    const [playerHand, setPlayerHand] = useState(() => new Hand());
+    const [splitHand, setSplitHand] = useState(() => new Hand());
+    const [houseHand, setHouseHand] = useState(() => new Hand());
+    const [shoe, setShoe] = useState(() => new Shoe(2));
     // game flow state
     const [isDealing, setIsDealing] = useState(false);
     const [isGameOver, setIsGameOver] = useState(true);

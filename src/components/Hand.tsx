@@ -1,8 +1,8 @@
-import { Hand } from '@/pages';
+import { HandInt } from '@/lib/interfaces';
 import CardComponent from './Card';
 
 type Props = {
-    hand: Hand;
+    hand: HandInt;
 };
 
 export default function HandComponent({ hand }: Props) {

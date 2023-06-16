@@ -1,6 +1,6 @@
-import { Card } from '@/pages';
+import { CardInt } from '@/lib/interfaces';
 
-export default function CardComponent({ value, suit }: Card) {
+export default function CardComponent({ value, suit }: CardInt) {
     return (
         <div className="flex gap-2">
             <span>{value}</span>
