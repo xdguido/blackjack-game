@@ -1,6 +1,6 @@
 import { CardInt } from '../interfaces';
 
-export function sumPoints(points: number, card: CardInt) {
+export const sumPoints = (points: number, card: CardInt) => {
     let sum = points;
     let hasAce = false;
     switch (card.value) {
@@ -21,4 +21,18 @@ export function sumPoints(points: number, card: CardInt) {
         sum += 10;
     }
     return sum;
-}
+};
+
+export const isBust = (points: number) => {
+    if (points > 21) {
+        return true;
+    }
+    return false;
+};
+
+export const isBlackjack = (points: number) => {
+    if (points === 21) {
+        return true;
+    }
+    return false;
+};

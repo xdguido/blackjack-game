@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import HandComponent from '@/components/Hand';
 import { CardInt, HandInt } from '@/lib/interfaces';
 import { Hand, Shoe } from '@/lib/models';
-import { sumPoints } from '@/lib/utils';
+import { sumPoints, isBust, isBlackjack } from '@/lib/utils';
 
 export default function Game() {
     // cards flow state
@@ -26,18 +26,6 @@ export default function Game() {
     const delay: number = 300;
 
     useEffect(() => {
-        const isBust = (points: number) => {
-            if (points > 21) {
-                return true;
-            }
-            return false;
-        };
-        const isBlackjack = (points: number) => {
-            if (points === 21) {
-                return true;
-            }
-            return false;
-        };
         const handleGameOver = async (message: string) => {
             setGameMessage(message);
             setIsLastTurn(false);
