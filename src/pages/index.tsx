@@ -23,7 +23,7 @@ export default function Game() {
     const splitPoints = splitHand.sumPoints();
     const housePoints = houseHand.sumPoints();
 
-    const delay: number = 300;
+    const delay: number = 500;
 
     useEffect(() => {
         const handleGameOver = async (message: string) => {
@@ -131,7 +131,7 @@ export default function Game() {
     const resetHands = async () => {
         setIsDealing(true);
         await new Promise((resolve) => {
-            setTimeout(resolve, 2000);
+            setTimeout(resolve, 2500);
         });
         setIsDealing(false);
         setPlayerHand(new Hand());
@@ -139,55 +139,44 @@ export default function Game() {
         setSplitHand(new Hand());
     };
 
-    const dealCards = async (hand: HandInt, amount: number) => {
-        let cardIndex: number = 0;
+    const dealCard = (hand: HandInt) => {
+        const { card, newShoe } = shoe.popCardFromShoe();
 
-        const dealCard = () => {
-            const { card, newShoe } = shoe.popCardFromShoe();
-
-            switch (hand) {
-                case playerHand:
-                    setPlayerHand((prevState) => {
-                        const updatedHand = new Hand();
-                        updatedHand.cards = [...prevState.cards];
-                        if (card) {
-                            updatedHand.cards.push(card);
-                        }
-                        return updatedHand;
-                    });
-                    break;
-                case houseHand:
-                    setHouseHand((prevState) => {
-                        const updatedHand = new Hand();
-                        updatedHand.cards = [...prevState.cards];
-                        if (card) {
-                            updatedHand.cards.push(card);
-                        }
-                        return updatedHand;
-                    });
-                    break;
-                case splitHand:
-                    setSplitHand((prevState) => {
-                        const updatedHand = new Hand();
-                        updatedHand.cards = [...prevState.cards];
-                        if (card) {
-                            updatedHand.cards.push(card);
-                        }
-                        return updatedHand;
-                    });
-                    break;
-                default:
-                    console.log('Invalid hand');
-            }
-
-            setShoe(newShoe);
-            cardIndex++;
-        };
-
-        while (cardIndex < amount) {
-            await new Promise((resolve) => setTimeout(resolve, delay));
-            dealCard();
+        switch (hand) {
+            case playerHand:
+                setPlayerHand((prevState) => {
+                    const updatedHand = new Hand();
+                    updatedHand.cards = [...prevState.cards];
+                    if (card) {
+                        updatedHand.cards.push(card);
+                    }
+                    return updatedHand;
+                });
+                break;
+            case houseHand:
+                setHouseHand((prevState) => {
+                    const updatedHand = new Hand();
+                    updatedHand.cards = [...prevState.cards];
+                    if (card) {
+                        updatedHand.cards.push(card);
+                    }
+                    return updatedHand;
+                });
+                break;
+            case splitHand:
+                setSplitHand((prevState) => {
+                    const updatedHand = new Hand();
+                    updatedHand.cards = [...prevState.cards];
+                    if (card) {
+                        updatedHand.cards.push(card);
+                    }
+                    return updatedHand;
+                });
+                break;
+            default:
+                console.log('Invalid hand');
         }
+        setShoe(newShoe);
     };
 
     const handleStart = async () => {
@@ -200,7 +189,10 @@ export default function Game() {
 
     const handleHit = async () => {
         setIsDealing(true);
-        await dealCards(playerHand, 1);
+        if (isLastTurn) {
+            await new Promise((resolve) => setTimeout(resolve, delay));
+        }
+        dealCard(playerHand);
         setIsDealing(false);
         setIsFirstTurn(false);
     };
@@ -223,8 +215,13 @@ export default function Game() {
 
     const dealInitialCards = async () => {
         setIsDealing(true);
-        await dealCards(houseHand, 2);
-        await dealCards(playerHand, 2);
+        dealCard(playerHand);
+        await new Promise((resolve) => setTimeout(resolve, delay));
+        dealCard(houseHand);
+        await new Promise((resolve) => setTimeout(resolve, delay));
+        dealCard(playerHand);
+        await new Promise((resolve) => setTimeout(resolve, delay));
+        dealCard(houseHand);
         setIsDealing(false);
     };
 
@@ -271,13 +268,25 @@ export default function Game() {
 
     return (
         <main className="flex flex-col items-center min-h-screen p-24">
-            <h1>Blackjack</h1>
-            <span className="mb-2">{gameMessage}</span>
-            <span>Shoe: {shoe.decks.length}</span>
-            <span>House hand: {housePoints}</span>
-            <HandComponent hand={houseHand} coverCard={coverCard} />
-            <span>Player hand: {playerPoints}</span>
-            <HandComponent hand={playerHand} />
+            {/* <h1>Blackjack</h1> */}
+            <span className="font-semibold h-10 mb-2">{gameMessage}</span>
+            <span className="mb-2">Shoe: {shoe.decks.length}</span>
+            <div className="relative">
+                {!coverCard && !isGameOver && (
+                    <span className="absolute flex -left-8 inset-y-0 items-center">
+                        {housePoints}
+                    </span>
+                )}
+                <HandComponent hand={houseHand} coverCard={coverCard} />
+            </div>
+            <div className="relative">
+                {!isGameOver && (
+                    <span className="absolute flex -left-8 inset-y-0 items-center">
+                        {playerPoints}
+                    </span>
+                )}
+                <HandComponent hand={playerHand} />
+            </div>
             <div className="flex gap-2 mt-2">
                 {!isDealing && !isGameOver && (
                     <>

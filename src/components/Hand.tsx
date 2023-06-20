@@ -8,14 +8,16 @@ type Props = {
 export default function HandComponent({ hand, coverCard = false }: Props) {
     return (
         // map cards
-        <div>
+        <div className="relative h-32 w-36 flex items-center">
             {hand.cards.map((card, index) => {
+                const dynamicLeft = `${index * 50}px`;
                 return (
-                    <CardComponent
-                        key={index}
-                        card={card}
-                        isCovered={index === 1 && coverCard ? true : false}
-                    />
+                    <div key={index} style={{ left: dynamicLeft }} className="absolute">
+                        <CardComponent
+                            card={card}
+                            isCovered={index === 1 && coverCard ? true : false}
+                        />
+                    </div>
                 );
             })}
         </div>
