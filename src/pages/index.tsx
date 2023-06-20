@@ -113,10 +113,16 @@ export default function Game() {
                 }
             }
         };
+        const handleShuffle = async () => {
+            if (shoe.decks.length < 20) {
+                setShoe(new Shoe(2));
+            }
+        };
         handleBj();
         handleBust();
         handleDouble();
         handleEndGame();
+        handleShuffle();
     }, [
         playerHand,
         playerPoints,
