@@ -275,7 +275,6 @@ export default function Game() {
     return (
         <main className="flex flex-col items-center min-h-screen p-24">
             {/* <h1>Blackjack</h1> */}
-            <span className="font-semibold h-10 mb-2">{gameMessage}</span>
             <span className="mb-2">Shoe: {shoe.decks.length}</span>
             <div className="relative">
                 {!coverCard && !isGameOver && (
@@ -285,6 +284,7 @@ export default function Game() {
                 )}
                 <HandComponent hand={houseHand} coverCard={coverCard} />
             </div>
+            <span className="flex items-center font-semibold h-10">{gameMessage}</span>
             <div className="relative">
                 {!isGameOver && (
                     <span className="absolute flex -left-8 inset-y-0 items-center">
