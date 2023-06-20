@@ -77,7 +77,7 @@ export default function Game() {
                 const houseBj = isBlackjack(housePoints);
                 const playerBj = isBlackjack(playerPoints);
                 if (playerBj && !houseBj) {
-                    await handleGameOver('You won! Blackjack');
+                    await handleGameOver('Blackjack');
                 }
                 if (!playerBj && houseBj) {
                     await handleGameOver('You lose');
@@ -95,7 +95,7 @@ export default function Game() {
                     await handleGameOver('Bust');
                 }
                 if (houseBust) {
-                    await handleGameOver('You win. House bust');
+                    await handleGameOver('You win');
                 }
             }
         };
