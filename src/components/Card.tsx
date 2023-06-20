@@ -37,15 +37,19 @@ export default function CardComponent({ card, isCovered }: Props) {
     const suit = setSuit(card.suit);
     const color = setColor(card.suit);
     return (
-        <div className="relative w-24 h-24">
+        <div className="relative w-20 h-24">
             <div className={`card ${isCovered ? '' : flip ? 'flip' : ''}`}>
                 <div
-                    className={`${color} front-face font-semibold p-1.5 text-3xl rounded-lg border border-gray-300`}
+                    className={`${color} flex items-start front-face font-semibold p-1.5 text-3xl leading-7 rounded-lg border border-slate-300`}
                 >
-                    <span className="">{card.value}</span>
-                    <span className="">{suit}</span>
+                    <div className="flex flex-col items-center">
+                        <span>{card.value}</span>
+                        <span>{suit}</span>
+                    </div>
                 </div>
-                <div className="back-face rounded-lg"></div>
+                <div className="back-face flex items-center justify-center text-3xl rounded-lg border border-slate-800">
+                    ✨
+                </div>
             </div>
         </div>
     );
