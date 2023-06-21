@@ -8,7 +8,7 @@ type Props = {
 export default function HandComponent({ hand, coverCard = false }: Props) {
     return (
         // map cards
-        <div className="relative h-32 w-36 flex items-center">
+        <div className="relative h-32 w-44 flex items-center">
             {hand.cards.map((card, index) => {
                 const dynamicLeft = `${index * 40}px`;
                 return (

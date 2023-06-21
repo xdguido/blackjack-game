@@ -3,6 +3,7 @@ import HandComponent from '@/components/Hand';
 import { CardInt, HandInt } from '@/lib/interfaces';
 import { Hand, Shoe } from '@/lib/models';
 import { sumPoints, isBust, isBlackjack } from '@/lib/utils';
+import Button from '@/components/ui/Button';
 
 export default function Game() {
     // cards flow state
@@ -284,7 +285,13 @@ export default function Game() {
                 )}
                 <HandComponent hand={houseHand} coverCard={coverCard} />
             </div>
-            <span className="flex items-center font-semibold h-10">{gameMessage}</span>
+            <span
+                className={`flex items-center font-semibold h-32 text-2xl transition-all duration-300 ${
+                    gameMessage ? 'scale-100 opacity-100' : 'scale-50 opacity-50'
+                }`}
+            >
+                {gameMessage}
+            </span>
             <div className="relative">
                 {!isGameOver && (
                     <span className="absolute flex -left-8 inset-y-0 items-center">
@@ -293,16 +300,20 @@ export default function Game() {
                 )}
                 <HandComponent hand={playerHand} />
             </div>
-            <div className="flex gap-2 mt-2">
+            <div className="grid grid-cols-2 w-44 items-start gap-7 mt-2">
                 {!isDealing && !isGameOver && (
                     <>
-                        <button onClick={handleHit}>Hit</button>
-                        {isFirstTurn && <button onClick={handleDouble}>Double</button>}
-                        <button onClick={handleStand}>Stand</button>
+                        <div className="flex flex-col gap-4">
+                            <Button className="w-full" onClick={handleHit}>
+                                Hit
+                            </Button>
+                            <Button onClick={handleStand}>Stand</Button>
+                        </div>
+                        {isFirstTurn && <Button onClick={handleDouble}>Double</Button>}
                     </>
                 )}
-                {isGameOver && <>{<button onClick={handleStart}>Start</button>}</>}
             </div>
+            {isGameOver && <>{<Button onClick={handleStart}>Start</Button>}</>}
         </main>
     );
 }
